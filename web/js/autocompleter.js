@@ -560,6 +560,13 @@ app.registerExtension({
 
 	},
 	setup() {
+		async function genWildcardAutocompleteTxt() {
+			await api.fetchApi("/pysssss/generate-wildcards", {
+				method: "POST",
+				cache: "no-store"
+			});
+		}
+
 		async function addEmbeddings() {
 			const embeddings = await api.getEmbeddings();
 			const words = {};
@@ -603,7 +610,7 @@ app.registerExtension({
 		}
 
 		// store global words with/without loras
-		Promise.all([addEmbeddings(), addCustomWords()])
+		Promise.all([addEmbeddings(), genWildcardAutocompleteTxt(), addCustomWords()])
 			.then(() => {
 				TextAreaAutoComplete.globalWordsExclLoras = Object.assign({}, TextAreaAutoComplete.globalWords);
 			})
