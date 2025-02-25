@@ -1,7 +1,7 @@
-import { app } from "../../../scripts/app.js";
-import { ComfyWidgets } from "../../../scripts/widgets.js";
 import { api } from "../../../scripts/api.js";
+import { app } from "../../../scripts/app.js";
 import { $el, ComfyDialog } from "../../../scripts/ui.js";
+import { ComfyWidgets } from "../../../scripts/widgets.js";
 import { TextAreaAutoComplete } from "./common/autocomplete.js";
 import { ModelInfoDialog } from "./common/modelInfoDialog.js";
 import { LoraInfoDialog } from "./modelInfo.js";
@@ -407,12 +407,41 @@ app.registerExtension({
 									checked: !!TextAreaAutoComplete.replacer,
 									onchange: (event) => {
 										const checked = !!event.target.checked;
-										TextAreaAutoComplete.replacer = checked ? (v) => v.replaceAll("_", " ") : undefined;
+										TextAreaAutoComplete.replacer = checked
+											? (v) => {
+												if (TextAreaAutoComplete.excludeDoubleUnderscore && (v.match(/_/g) || []).length >= 2) {
+													return v;
+												}
+												return v.replaceAll("_", " ");
+											}
+											: undefined;
 										localStorage.setItem(id + ".ReplaceUnderscore", checked);
 									},
 								}),
+								$el(
+									"label",
+									{
+										style: {
+											display: "block",
+											marginLeft: "20px",
+										},
+									},
+									[
+										$el("input", {
+											type: "checkbox",
+											checked: !!TextAreaAutoComplete.excludeDoubleUnderscore,
+											onchange: (event) => {
+												const checked = !!event.target.checked;
+												TextAreaAutoComplete.excludeDoubleUnderscore = checked;
+												localStorage.setItem(id + ".ExcludeDoubleUnderscore", checked);
+											},
+										}),
+										$el("span", { textContent: "Exclude tags with __" }),
+									]
+								)
 							]
 						),
+
 						$el(
 							"label",
 							{
@@ -494,9 +523,9 @@ app.registerExtension({
 							onclick: () => {
 								try {
 									// Try closing old settings window
-									if (typeof app.ui.settings.element?.close === "function") { 
+									if (typeof app.ui.settings.element?.close === "function") {
 										app.ui.settings.element.close();
-									}	
+									}
 								} catch (error) {
 								}
 								try {
@@ -506,7 +535,7 @@ app.registerExtension({
 									// Fallback to just hiding the element
 									app.ui.settings.element.style.display = "none";
 								}
-								
+
 								new CustomWordsDialog().show();
 							},
 							style: {
@@ -526,6 +555,8 @@ app.registerExtension({
 		TextAreaAutoComplete.insertOnEnter = localStorage.getItem(id + ".InsertOnEnter") !== "false";
 		TextAreaAutoComplete.lorasEnabled = localStorage.getItem(id + ".ShowLoras") === "true";
 		TextAreaAutoComplete.suggestionCount = +localStorage.getItem(id + ".SuggestionCount") || 20;
+		TextAreaAutoComplete.excludeDoubleUnderscore = localStorage.getItem(id + ".ExcludeDoubleUnderscore") === "true";
+
 	},
 	setup() {
 		async function addEmbeddings() {
@@ -549,7 +580,7 @@ app.registerExtension({
 			let loras;
 			try {
 				loras = LiteGraph.registered_node_types["LoraLoader"]?.nodeData.input.required.lora_name[0];
-			} catch (error) {}
+			} catch (error) { }
 
 			if (!loras?.length) {
 				loras = await api.fetchApi("/pysssss/loras", { cache: "no-store" }).then((res) => res.json());
