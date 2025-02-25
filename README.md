@@ -1,5 +1,11 @@
 # ComfyUI-Custom-Scripts
 
+# Fork info:
+I modified the autocomplete parts so they will attempt to get the wildcard names (file names for txt files and category names for yaml) from the ComfyUI-Impact-Pack wildcards folder and create an autocomplete file `wildcards_autocomplete.txt` from it that will be loaded on ComfyUI interface load and it should basically *just work* (hopefully)
+Typing `__` should start to reveal the wildcards in the autocomplete popup.
+**Don't forget to check the new setting to exclude double or more underscores to be excluded from the `Replace _ with space` setting.**
+
+
 ### ⚠️ While these extensions work for the most part, i'm very busy at the moment and so unable to keep on top of everything here, thanks for your patience!
 
 # Installation
