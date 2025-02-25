@@ -80,7 +80,8 @@ function parseCSV(csvText) {
 async function getCustomWords() {
 	const resp = await api.fetchApi("/pysssss/autocomplete", { cache: "no-store" });
 	if (resp.status === 200) {
-		return await resp.text();
+		const data = await resp.json(); // Change to json()
+		return data.autocomplete + "\n" + data.wildcards_autocomplete; // Combine files
 	}
 	return undefined;
 }
