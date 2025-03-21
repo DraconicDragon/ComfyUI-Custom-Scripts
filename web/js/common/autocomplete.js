@@ -621,19 +621,15 @@ export class TextAreaAutoComplete {
 						let value = wordInfo.value ?? wordInfo.text;
 						const use_replacer = wordInfo.use_replacer ?? true;
 						if (TextAreaAutoComplete.replacer && use_replacer) {
-							// Apply underscore replacement unless excluded
 							const originalValue = value;
-							value = TextAreaAutoComplete.replacer(value);
-
-							// Check for if replacement should be excluded for double underscores
-							if (TextAreaAutoComplete.excludeDoubleUnderscore) {
-								const underscoreCount = (originalValue.match(/_/g) || []).length;
-								if (underscoreCount >= 2) {
-									// Bypass replacer and keep original value
-									value = originalValue;
-								}
+							// If double underscores exist and exclusion is enabled, keep the original value.
+							if (TextAreaAutoComplete.excludeDoubleUnderscore && originalValue.includes("__")) {
+								value = originalValue;
+							} else {
+								value = TextAreaAutoComplete.replacer(value);
 							}
 						}
+
 
 						value = this.#escapeParentheses(value);
 

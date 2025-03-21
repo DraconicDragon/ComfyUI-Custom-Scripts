@@ -410,7 +410,8 @@ app.registerExtension({
 										const checked = !!event.target.checked;
 										TextAreaAutoComplete.replacer = checked
 											? (v) => {
-												if (TextAreaAutoComplete.excludeDoubleUnderscore && (v.match(/_/g) || []).length >= 2) {
+												// Only skip replacement if the string contains a double underscore.
+												if (TextAreaAutoComplete.excludeDoubleUnderscore && v.includes("__")) {
 													return v;
 												}
 												return v.replaceAll("_", " ");
