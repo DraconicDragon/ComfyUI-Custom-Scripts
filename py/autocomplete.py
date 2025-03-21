@@ -79,7 +79,14 @@ def read_wildcard_dict(wildcard_path):
                     continue
 
             # Process YAML files
-            elif file.endswith(".yaml") or file.endswith(".yml"): # NOTE: .yml isnt supported by impact pack apparently? so this is useless
+            elif file.endswith(".yaml") or file.endswith(
+                ".yml"
+            ):  # NOTE: .yml isnt supported by impact pack apparently? so this is useless
+                if file.endswith(".yml"):
+                    print(
+                        f"(Custom-Scripts) WARN: .yml files are not supported by Impact Pack. You should rename {file_path} to .yaml"
+                    )
+                    continue
                 try:
                     with open(file_path, "r", encoding="utf-8") as f:
                         yaml_data = yaml.load(f, Loader=yaml.FullLoader)
