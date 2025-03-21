@@ -79,7 +79,7 @@ def read_wildcard_dict(wildcard_path):
                     continue
 
             # Process YAML files
-            elif file.endswith(".yaml"):
+            elif file.endswith(".yaml") or file.endswith(".yml"):
                 try:
                     with open(file_path, "r", encoding="utf-8") as f:
                         yaml_data = yaml.load(f, Loader=yaml.FullLoader)
