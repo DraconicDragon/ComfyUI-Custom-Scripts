@@ -98,17 +98,32 @@ def read_wildcard_dict(wildcard_path):
 
 
 def generate_autocomplete_file():
-    # Get all wildcard entries as __key__ format
-    wildcard_list = [f"__{k}__" for k in wildcard_dict.keys()]
+    # Collect all directory paths
+    directories = set()
+    wildcard_entries = []
 
-    # Sort alphabetically
-    wildcard_list.sort()
+    for key in wildcard_dict.keys():
+        # Add original entry
+        wildcard_entries.append(f"__{key}__")
+
+        # Split key into parts and generate parent directories
+        parts = key.split("/")
+        for i in range(1, len(parts)):
+            parent_path = "/".join(parts[:i])
+            directories.add(parent_path)
+
+    # Create directory entries
+    directory_entries = [f"__{d}/*__" for d in directories]
+
+    # Combine and sort
+    combined_list = wildcard_entries + directory_entries
+    combined_list.sort()
 
     # Write to autocomplete file
     with open(autocomplete_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(wildcard_list))
+        f.write("\n".join(combined_list))
 
-    print(f"Generated wildcards_autocomplete.txt with {len(wildcard_list)} entries")
+    print(f"Generated wildcards_autocomplete.txt with {len(combined_list)} entries")
 
 
 # endregion
